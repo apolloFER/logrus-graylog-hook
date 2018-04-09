@@ -11,6 +11,7 @@ All logrus fields will be sent as additional fields on Graylog.
 The hook must be configured with:
 
 * A Graylog GELF UDP address (a "ip:port" string).
+* A facility
 * an optional hash with extra global fields. These fields will be included in all messages sent to Graylog
 
 ```go
@@ -23,7 +24,7 @@ import (
     )
 
 func main() {
-    hook := graylog.NewGraylogHook("<graylog_ip>:<graylog_port>", map[string]interface{}{"this": "is logged every time"})
+    hook := graylog.NewGraylogHook("<graylog_ip>:<graylog_port>", "test_facility", map[string]interface{}{"this": "is logged every time"})
     log.AddHook(hook)
     log.Info("some logging message")
 }
@@ -41,7 +42,7 @@ import (
     )
 
 func main() {
-    hook := graylog.NewAsyncGraylogHook("<graylog_ip>:<graylog_port>", map[string]interface{}{"this": "is logged every time"})
+    hook := graylog.NewAsyncGraylogHook("<graylog_ip>:<graylog_port>", "test_facility", map[string]interface{}{"this": "is logged every time"})
     defer hook.Flush()
     log.AddHook(hook)
     log.Info("some logging message")

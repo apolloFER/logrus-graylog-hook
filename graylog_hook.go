@@ -23,6 +23,7 @@ var BufSize uint = 8192
 
 // GraylogHook to send logs to a logging service compatible with the Graylog API and the GELF format.
 type GraylogHook struct {
+	Facility	string
 	Extra       map[string]interface{}
 	Host        string
 	Level       logrus.Level
@@ -42,7 +43,7 @@ type graylogEntry struct {
 }
 
 // NewGraylogHook creates a hook to be added to an instance of logger.
-func NewGraylogHook(addr string, extra map[string]interface{}) *GraylogHook {
+func NewGraylogHook(addr string, facility string, extra map[string]interface{}) *GraylogHook {
 	g, err := NewWriter(addr)
 	if err != nil {
 		logrus.WithError(err).Error("Can't create Gelf logger")
@@ -54,6 +55,7 @@ func NewGraylogHook(addr string, extra map[string]interface{}) *GraylogHook {
 	}
 
 	hook := &GraylogHook{
+		Facility:	 facility,
 		Host:        host,
 		Extra:       extra,
 		Level:       logrus.DebugLevel,
@@ -66,7 +68,7 @@ func NewGraylogHook(addr string, extra map[string]interface{}) *GraylogHook {
 // NewAsyncGraylogHook creates a hook to be added to an instance of logger.
 // The hook created will be asynchronous, and it's the responsibility of the user to call the Flush method
 // before exiting to empty the log queue.
-func NewAsyncGraylogHook(addr string, extra map[string]interface{}) *GraylogHook {
+func NewAsyncGraylogHook(addr string, facility string, extra map[string]interface{}) *GraylogHook {
 	g, err := NewWriter(addr)
 	if err != nil {
 		logrus.WithError(err).Error("Can't create Gelf logger")
@@ -78,6 +80,7 @@ func NewAsyncGraylogHook(addr string, extra map[string]interface{}) *GraylogHook
 	}
 
 	hook := &GraylogHook{
+		Facility:	facility,
 		Host:       host,
 		Extra:      extra,
 		Level:      logrus.DebugLevel,
@@ -214,6 +217,7 @@ func (hook *GraylogHook) sendEntry(entry graylogEntry) {
 		Full:     string(full),
 		TimeUnix: float64(time.Now().UnixNano()/1000000) / 1000.,
 		Level:    level,
+		Facility: hook.Facility,
 		File:     entry.file,
 		Line:     entry.line,
 		Extra:    extra,

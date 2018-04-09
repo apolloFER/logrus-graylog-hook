@@ -23,7 +23,7 @@ func TestWritingToUDP(t *testing.T) {
 	if err != nil {
 		t.Fatalf("NewReader: %s", err)
 	}
-	hook := NewGraylogHook(r.Addr(), map[string]interface{}{"foo": "bar"})
+	hook := NewGraylogHook(r.Addr(), "test_facility", map[string]interface{}{"foo": "bar"})
 	hook.Host = "testing.local"
 	hook.Blacklist([]string{"filterMe"})
 	msgData := "test message\nsecond line"
@@ -89,7 +89,7 @@ func testErrorLevelReporting(t *testing.T) {
 	if err != nil {
 		t.Fatalf("NewReader: %s", err)
 	}
-	hook := NewGraylogHook(r.Addr(), map[string]interface{}{"foo": "bar"})
+	hook := NewGraylogHook(r.Addr(), "test_facility", map[string]interface{}{"foo": "bar"})
 	msgData := "test message\nsecond line"
 
 	log := logrus.New()
@@ -122,7 +122,7 @@ func TestJSONErrorMarshalling(t *testing.T) {
 	if err != nil {
 		t.Fatalf("NewReader: %s", err)
 	}
-	hook := NewGraylogHook(r.Addr(), map[string]interface{}{})
+	hook := NewGraylogHook(r.Addr(), "test_facility", map[string]interface{}{})
 
 	log := logrus.New()
 	log.Out = ioutil.Discard
@@ -151,8 +151,8 @@ func TestParallelLogging(t *testing.T) {
 	if err != nil {
 		t.Fatalf("NewReader: %s", err)
 	}
-	hook := NewGraylogHook(r.Addr(), nil)
-	asyncHook := NewAsyncGraylogHook(r.Addr(), nil)
+	hook := NewGraylogHook(r.Addr(), "test_facility", nil)
+	asyncHook := NewAsyncGraylogHook(r.Addr(), "test_facility", nil)
 
 	log := logrus.New()
 	log.Out = ioutil.Discard
@@ -212,7 +212,7 @@ func TestSetWriter(t *testing.T) {
 	if err != nil {
 		t.Fatalf("NewReader: %s", err)
 	}
-	hook := NewGraylogHook(r.Addr(), nil)
+	hook := NewGraylogHook(r.Addr(), "test_facility", nil)
 
 	w := hook.Writer()
 	w.CompressionLevel = flate.BestCompression
@@ -233,7 +233,7 @@ func TestWithInvalidGraylogAddr(t *testing.T) {
 		panic(err)
 	}
 	logrus.SetOutput(ioutil.Discard)
-	hook := NewGraylogHook(addr.String(), nil)
+	hook := NewGraylogHook(addr.String(), "test_facility", nil)
 
 	log := logrus.New()
 	log.Out = ioutil.Discard
@@ -248,7 +248,7 @@ func TestStackTracer(t *testing.T) {
 	if err != nil {
 		t.Fatalf("NewReader: %s", err)
 	}
-	hook := NewGraylogHook(r.Addr(), map[string]interface{}{})
+	hook := NewGraylogHook(r.Addr(), "test_facility", map[string]interface{}{})
 
 	log := logrus.New()
 	log.Out = ioutil.Discard
